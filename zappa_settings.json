@@ -1,0 +1,18 @@
+{
+    "dev": {
+        "aws_region": "ap-northeast-2",
+        "django_settings": "patienceforest_user_api.settings.dev",
+        "profile_name": "default",
+        "project_name": "patienceforest-",
+        "runtime": "python3.6",
+        "s3_bucket": "patienceforest-dev-deploymentbucket"
+    },
+    "production": {
+        "aws_region": "ap-northeast-2",
+        "django_settings": "patienceforest_user_api.settings.prod",
+        "profile_name": "default",
+        "project_name": "patienceforest-",
+        "runtime": "python3.6",
+        "s3_bucket": "patienceforest-prod-deploymentbucket"
+    }
+}
