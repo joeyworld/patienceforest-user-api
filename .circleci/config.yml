@@ -45,6 +45,7 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
+            pip install coverage
             coverage run manage.py test apps.users.tests
       - store_artifacts:
           path: test-reports
