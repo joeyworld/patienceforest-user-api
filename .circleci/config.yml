@@ -14,7 +14,28 @@ jobs:
           command: |
             python -m venv venv
             . venv/bin/activate
-            pip install -U pip
+            pip install pip==9.0.3
+            pip install -r requirements.txt
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+
+  test:
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "requirements.txt" }}
+          - v1-dependencies-
+      - run:
+          name: install dependencies
+          command: |
+            python -m venv venv
+            . venv/bin/activate
+            pip install pip==9.0.3
             pip install -r requirements.txt
       - save_cache:
           paths:
@@ -24,7 +45,92 @@ jobs:
           name: run tests
           command: |
             . venv/bin/activate
-            python manage.py test
+            coverage run manage.py test apps.users.tests
       - store_artifacts:
           path: test-reports
           destination: test-reports
+
+  deploy-dev:
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "requirements.txt" }}
+          - v1-dependencies-
+      - run:
+          name: install dependencies
+          command: |
+            python -m venv venv
+            . venv/bin/activate
+            pip install pip==9.0.3
+            pip install -r requirements.txt
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+      - run:
+          name: deploy to development stage
+          command: |
+            . venv/bin/activate
+            zappa update dev
+
+  deploy-prod:
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "requirements.txt" }}
+          - v1-dependencies-
+      - run:
+          name: install dependencies
+          command: |
+            python -m venv venv
+            . venv/bin/activate
+            pip install pip==9.0.3
+            pip install -r requirements.txt
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+      - run:
+          name: deploy to development stage
+          command: |
+            . venv/bin/activate
+            zappa update production
+
+workflows:
+  version: 2
+  build-test-deployment:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - deploy-dev:
+          requires:
+            - build
+            - test
+          filters:
+            branches:
+              only:
+                - develop
+                - master
+      - hold:
+          type: approval
+          requires:
+            - build
+            - test
+            - deploy-dev
+      - deploy-prod:
+          requires:
+            - build
+            - test
+            - deploy-dev
+            - hold
+          filters:
+            branches:
+              only: master
