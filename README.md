@@ -1,4 +1,6 @@
 # Patience Forest(인내의 숲) User API
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/a10c88041cf70d60a4b4)
+
 디프만 4기 2차 미니프로젝트 의 USER API 입니다.
 
 ## Base URL
