@@ -56,7 +56,7 @@ class User(AbstractBaseUser):
         return True
 
     def __str__(self):
-        return '인내의 숲 API 유저 모델'
+        return 'User : email={}, username={}'.format(self.email, self.username)
 
     class Meta:
         db_table = 'patienceforest-users'

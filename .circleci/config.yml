@@ -46,7 +46,7 @@ jobs:
           command: |
             . venv/bin/activate
             pip install coverage
-            coverage run manage.py test apps.users.tests
+            coverage run manage.py test tests/**
       - store_artifacts:
           path: test-reports
           destination: test-reports
@@ -75,6 +75,8 @@ jobs:
           name: deploy to development stage
           command: |
             . venv/bin/activate
+            chmod 755 credentials.sh
+            ./credentials.sh
             zappa update dev
 
   deploy-prod:
@@ -101,6 +103,8 @@ jobs:
           name: deploy to development stage
           command: |
             . venv/bin/activate
+            chmod 755 credentials.sh
+            ./credentials.sh
             zappa update production
 
 workflows:
